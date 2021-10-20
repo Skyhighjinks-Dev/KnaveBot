@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+
 using System;
 
 namespace KnaveBot.Core.Struct.Discord

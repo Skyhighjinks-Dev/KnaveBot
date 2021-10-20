@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
 using System;
+
 namespace KnaveBot.Core.Managers
 {
   public static class ServiceManager

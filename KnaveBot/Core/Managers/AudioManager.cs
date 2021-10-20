@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Victoria;
 using Victoria.Enums;
 using Victoria.Responses.Search;
@@ -69,31 +71,28 @@ namespace KnaveBot.Core.Managers
         if (search.Status == SearchStatus.LoadFailed || search.Status == SearchStatus.NoMatches)
           return EmbedManager.BuildEmbed("Issue loading music: " + search.Status).Build();
 
-        if (player.Track != null && player.PlayerState == PlayerState.Playing || player.PlayerState == PlayerState.Paused)
+
+        foreach (LavaTrack _track in search.Tracks)
         {
-          if (search.Tracks.Count() > 0)
-          {
-            foreach (LavaTrack _track in search.Tracks)
-            {
-              player.Queue.Enqueue(_track);
-            }
-          }
-          else
-            player.Queue.Enqueue(search.Tracks.First());
+          player.Queue.Enqueue(_track);
         }
 
-        if (search.Tracks.Count() > 1)
-          return EmbedManager.BuildEmbed($"Added: ({search.Tracks.Count()}) to the queue").Build();
+        if (player.Track != null && player.PlayerState == PlayerState.Playing || player.PlayerState == PlayerState.Paused)
+        {
+          return EmbedManager.BuildEmbed($"Added: ({search.Tracks.Count()}) songs to the queue").Build();
+        }
 
-        else
-          return EmbedManager.BuildEmbed(search.Tracks.First()).Build();
+        await player.PlayAsync(player.Queue.First());
 
+        if(search.Tracks.Count() > 1)
+          return EmbedManager.BuildEmbed($"Added: ({search.Tracks.Count()}) songs to the queue").Build();
+        
+        return EmbedManager.BuildEmbed(search.Tracks.First()).Build();
       }
       catch (Exception e)
       {
         Console.WriteLine(e.Message);
       }
-
 
       return EmbedManager.BuildEmbed("Somethign went wront :x").Build();
     }

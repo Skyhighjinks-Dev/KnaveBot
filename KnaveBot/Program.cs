@@ -1,7 +1,4 @@
 ﻿using KnaveBot.Core;
-using KnaveBot.Database;
-using System;
-using System.Threading.Tasks;
 
 namespace KnaveBot
 {

@@ -1,13 +1,13 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+
 using KnaveBot.Core.Managers;
 using KnaveBot.Database;
+
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Threading.Tasks;
+
 using Victoria;
 
 namespace KnaveBot.Core

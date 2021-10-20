@@ -1,10 +1,5 @@
 ﻿using KnaveBot.Core.Enum.DatabaseEnum;
 using KnaveBot.Core.Struct.Discord;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KnaveBot.Core.Struct.DatabaseStruct
 {

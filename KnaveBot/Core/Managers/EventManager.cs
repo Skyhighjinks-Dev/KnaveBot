@@ -1,10 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+
 using KnaveBot.Database;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Threading.Tasks;
+
 using Victoria;
 
 namespace KnaveBot.Core.Managers
