@@ -1,0 +1,3 @@
+﻿- Assign roles (configured per server)
+- Log shit necessary 
+etc

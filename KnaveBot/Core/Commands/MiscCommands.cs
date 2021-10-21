@@ -11,7 +11,36 @@ namespace KnaveBot.Core.Commands
     [Command("ping")]
     public async Task Ping()
     {
-      await ReplyAsync(embed: EmbedManager.BuildEmbed("Pong").Build());
+      await ReplyAsync(embed: EmbedManager.BuildEmbed("Pong?").Build());
     }
+
+
+    //[Command("help")]
+    //public async Task Help([Remainder] string nCmd)
+    //{ 
+
+    //}
+
+
+    //[Command("help")]
+    //public async Task Help()
+    //{ 
+
+    //}
+
+    //[Command("invite")]
+    //public async Task Invite() => MiscManager.Invite();
+
+    //[Command("meme")]
+    //public async Task Meme() => MiscManager.Meme();
+
+    //[Command("crypto")]
+    //public async Task Crypto()
+    //{ 
+    
+    //}
+
+    //[Command("crypto")]
+    //public async Task Crypto(string nCrypto) => MiscManager.Crypto();
   }
 }
