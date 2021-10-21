@@ -27,5 +27,31 @@ namespace KnaveBot.Core.Commands
 
     [Command("resume")]
     public async Task ResumeCommand() => await Context.Channel.SendMessageAsync(embed: await AudioManager.ResumeTrack(Context.Guild));
+
+    [Command("Queue")]
+    public async Task Queue([Remainder]string nText)
+    {
+      if (string.IsNullOrEmpty(nText))
+      {
+        await Context.Channel.SendMessageAsync(embed: await AudioManager.Queue(Context.Guild, 1));
+        return;
+      }
+
+      string[] words = nText.Split(' ');
+
+      for (int x = 0; x < words.Length; x++)
+      {
+        if (int.TryParse(words[x], out int y))
+        {
+          await Context.Channel.SendMessageAsync(embed: await AudioManager.Queue(Context.Guild, y));
+          return;
+        }
+      }
+
+      await Context.Channel.SendMessageAsync(embed: await AudioManager.Queue(Context.Guild, 1));
+    }
+
+    [Command("Queue")]
+    public async Task Queue() => await Queue(null);
   }
 }

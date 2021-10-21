@@ -1,5 +1,7 @@
 ﻿using Discord;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Victoria;
 
 namespace KnaveBot.Core.Managers
@@ -40,6 +42,37 @@ namespace KnaveBot.Core.Managers
       {
         Name = "Added tracks",
         Value = $"({nTrackCount}) tracks have been added to the queue"
+      });
+
+      return eb;
+    }
+
+    public static EmbedBuilder BuildEmbed(LavaPlayer nPlayer, int nPage)
+    {
+      EmbedBuilder eb = new EmbedBuilder()
+      {
+        Title = "Current Queue",
+        Footer = new EmbedFooterBuilder()
+        { 
+          Text = $"Page: {nPage}/{(int)Math.Ceiling((decimal)(nPlayer.Queue.Count / 10))}"
+        }
+      };
+
+      List<LavaTrack> tracks = nPlayer.Queue.ToList();
+
+      string content = "";
+
+      int _pageItteration = (nPage - 1) * 10;
+
+      for (int x = 0; x < 10; x++)
+      {
+        content += $"[[{_pageItteration + (x + 1)}]: {tracks[_pageItteration + x].Title}]({tracks[_pageItteration + x].Url}){(x == 10 ? "" : "\n")}";
+      }
+
+      eb.AddField(new EmbedFieldBuilder()
+      {
+        Name = "Queued Tracks",
+        Value = content
       });
 
       return eb;

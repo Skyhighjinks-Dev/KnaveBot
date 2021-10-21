@@ -206,5 +206,18 @@ namespace KnaveBot.Core.Managers
         return EmbedManager.BuildEmbed($"Error: {e.Message}").Build();
       }
     }
+
+    public static async Task<Embed> Queue(IGuild nGuild, int nPage)
+    {
+      LavaPlayer player = LavaNode.GetPlayer(nGuild);
+
+      if (nPage < 1)
+        nPage = 1;
+
+      if (nPage > Math.Ceiling((decimal)(player.Queue.Count() / 10)))
+        nPage = (int)Math.Ceiling((decimal)(player.Queue.Count() / 10));
+
+      return EmbedManager.BuildEmbed(player, nPage).Build();
+    }
   }
 }
