@@ -31,5 +31,18 @@ namespace KnaveBot.Core.Managers
 
       return eb;
     }
+
+    public static EmbedBuilder BuildEmbed(LavaTrack nCurrTrack, int nTrackCount)
+    {
+      EmbedBuilder eb = BuildEmbed(nCurrTrack);
+
+      eb.AddField(new EmbedFieldBuilder()
+      {
+        Name = "Added tracks",
+        Value = $"({nTrackCount}) tracks have been added to the queue"
+      });
+
+      return eb;
+    }
   }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Victoria;
 using Victoria.Enums;
+using Victoria.EventArgs;
 using Victoria.Responses.Search;
 
 namespace KnaveBot.Core.Managers
@@ -85,16 +86,125 @@ namespace KnaveBot.Core.Managers
         await player.PlayAsync(player.Queue.First());
 
         if(search.Tracks.Count() > 1)
-          return EmbedManager.BuildEmbed($"Added: ({search.Tracks.Count()}) songs to the queue").Build();
+          return EmbedManager.BuildEmbed(player.Track, search.Tracks.Count()).Build();
         
-        return EmbedManager.BuildEmbed(search.Tracks.First()).Build();
+        return EmbedManager.BuildEmbed(player.Track).Build();
       }
       catch (Exception e)
       {
         Console.WriteLine(e.Message);
+        return EmbedManager.BuildEmbed("Somethign went wront :x").Build();
       }
+    }
 
-      return EmbedManager.BuildEmbed("Somethign went wront :x").Build();
+    public static async Task<Embed> SkipAsync(SocketGuildUser nUser, IGuild nGuild)
+    {
+      if (nUser.VoiceChannel == null)
+        return EmbedManager.BuildEmbed("You must be connected to a voice channel to use this command").Build();
+
+      if (!LavaNode.HasPlayer(nGuild))
+        return EmbedManager.BuildEmbed("I must be connected to a voice channel to execute this command").Build();
+
+      LavaPlayer player = LavaNode.GetPlayer(nGuild);
+
+      try
+      {
+        if (player.Track == null)
+          return EmbedManager.BuildEmbed("No track is currently playing").Build();
+
+        LavaTrack _track = player.Track;
+
+        if (player.PlayerState == PlayerState.Playing || player.PlayerState == PlayerState.Paused)
+        {
+          if (player.Queue.Count() < 1)
+          {
+            await player.StopAsync();
+            return EmbedManager.BuildEmbed("No songs left in the queue").Build();
+          }
+
+          var _newTrack = await player.SkipAsync(null);
+
+          while(_newTrack.Current.Url == _newTrack.Skipped.Url)
+            _newTrack = await player.SkipAsync(null);
+
+          return EmbedManager.BuildEmbed(_newTrack.Current).Build();
+        }
+
+        return EmbedManager.BuildEmbed("Something went wrong, weirdly :x").Build();
+      }
+      catch (Exception e)
+      {
+        return EmbedManager.BuildEmbed($"Error: {e.Message}").Build();
+      }
+    }
+
+    public static async Task<Embed> LeaveAsync(IGuild nGuild)
+    {
+      try
+      {
+        var player = LavaNode.GetPlayer(nGuild);
+        
+        if (player.PlayerState == PlayerState.Playing)
+          await player.StopAsync();
+
+        await LavaNode.LeaveAsync(player.VoiceChannel);
+        return EmbedManager.BuildEmbed("Leaving channel").Build();
+      }
+      catch (Exception e)
+      {
+        return EmbedManager.BuildEmbed($"Error: {e.Message}").Build();
+      }
+    }
+
+    public static async Task<Embed> TrackEnded(TrackEndedEventArgs nArgs)
+    {
+      if (!nArgs.Player.Queue.TryDequeue(out LavaTrack nTrack))
+        return EmbedManager.BuildEmbed("Issue trying to play next song").Build();
+
+      if (!(nTrack is LavaTrack track))
+        return EmbedManager.BuildEmbed($"Something even worse happened lolol").Build();
+
+      await nArgs.Player.PlayAsync(track);
+      return EmbedManager.BuildEmbed(track).Build();
+    }
+
+    public static async Task<Embed> PauseTrack(IGuild nGuild)
+    {
+      try
+      {
+        if (LavaNode.GetPlayer(nGuild).PlayerState == PlayerState.Playing)
+        {
+          await LavaNode.GetPlayer(nGuild).PauseAsync();
+          return EmbedManager.BuildEmbed("Player paused").Build();
+        }
+
+        return EmbedManager.BuildEmbed("Player is already paused").Build();
+      }
+      catch (Exception e)
+      {
+        return EmbedManager.BuildEmbed($"Error: {e.Message}").Build();
+      }
+    }
+
+    public static async Task<Embed> ResumeTrack(IGuild nGuild)
+    {
+      try
+      {
+        LavaPlayer player = LavaNode.GetPlayer(nGuild);
+
+        if (player.PlayerState == PlayerState.Stopped ||
+            player.PlayerState == PlayerState.Paused)
+        {
+          await player.ResumeAsync();
+          return EmbedManager.BuildEmbed(player.Track).Build();
+        }
+        else
+          return EmbedManager.BuildEmbed($"Can not resume").Build();
+      }
+      catch (Exception e)
+      {
+        return EmbedManager.BuildEmbed($"Error: {e.Message}").Build();
+      }
     }
   }
 }
