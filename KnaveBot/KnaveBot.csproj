@@ -14,9 +14,4 @@
     <PackageReference Include="Victoria" Version="5.2.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Core\Moderation\" />
-    <Folder Include="Core\Events\" />
-  </ItemGroup>
-
 </Project>
