@@ -77,5 +77,25 @@ namespace KnaveBot.Core.Managers
 
       return eb;
     }
+
+    public static EmbedBuilder BuildCoinflipEmbed(bool nIsHeads)
+    {
+      // TODO
+      // Add image for heads and tails
+
+      EmbedBuilder eb = new EmbedBuilder()
+      {
+        Title = "Coinflip"
+      };
+
+      eb.AddField(new EmbedFieldBuilder()
+      {
+        Name = "Result",
+        Value = nIsHeads ? "Heads" : "Tails",
+        IsInline = true
+      });
+      
+      return eb;
+    }
   }
 }
