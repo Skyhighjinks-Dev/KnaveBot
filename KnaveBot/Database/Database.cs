@@ -90,7 +90,7 @@ namespace KnaveBot.Database
     {
       List<ActivityData> _rtn = new List<ActivityData>();
 
-      string query = "SELECT * FROM [dbo].[AdminAction] WHERE [UserID] = @userId OR [SenderID] = @senderID";
+      string query = "SELECT * FROM [dbo].[AdminAction] WHERE [UserID] = @userId OR [SenderID] = @senderID AND [GuildID] = @guildID";
 
       try
       {
@@ -98,6 +98,7 @@ namespace KnaveBot.Database
         {
           cmd.Parameters.AddWithValue("@userId", nUser.Id.ToString());
           cmd.Parameters.AddWithValue("@senderID", nUser.Id.ToString());
+          cmd.Parameters.AddWithValue("@guildID", nUser.Guild.Id.ToString());
 
           using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
           {
@@ -147,7 +148,7 @@ namespace KnaveBot.Database
     {
       T rtn = new T();
 
-      foreach (FieldInfo f in typeof(ActivityData).GetFields())
+      foreach (FieldInfo f in typeof(T).GetFields())
       {
         Type _ = f.FieldType;
 
