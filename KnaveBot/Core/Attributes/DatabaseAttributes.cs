@@ -13,6 +13,8 @@ namespace KnaveBot.Core.Attributes
     { 
       public string ColumnName;
 
+      public DBAttribute() => ColumnName = null;
+
       public DBAttribute(string nName) => ColumnName = nName;
     }
   }

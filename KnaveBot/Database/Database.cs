@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using static KnaveBot.Core.Attributes.DatabaseAttributes;
 
@@ -104,20 +105,7 @@ namespace KnaveBot.Database
 
             while (reader.Read())
             {
-              _rtn.Add(new ActivityData()
-              {
-                ActionID = GetData<int>(reader, GetColumnName(nameof(ActivityData.ActionID))),
-                Action = GetData<AdminAction>(reader, GetColumnName(nameof(ActivityData.Action))),
-                ActionDate = GetData<DateTime?>(reader, GetColumnName(nameof(ActivityData.ActionDate))),
-                ExpiryDate = GetData<DateTime?>(reader, GetColumnName(nameof(ActivityData.ExpiryDate))),
-                GuildID = GetData<ulong>(reader, GetColumnName(nameof(ActivityData.GuildID))),
-                LastUpdateStatus = GetData<DateTime?>(reader, GetColumnName(nameof(ActivityData.LastUpdateStatus))),
-                Sender = GetData<string>(reader, GetColumnName(nameof(ActivityData.Sender))),
-                SenderID = GetData<ulong>(reader, GetColumnName(nameof(ActivityData.SenderID))),
-                Status = GetData<string>(reader, GetColumnName(nameof(ActivityData.Status))),
-                User = GetData<string>(reader, GetColumnName(nameof(ActivityData.User))),
-                UserID = GetData<ulong>(reader, GetColumnName(nameof(ActivityData.UserID)))
-              });
+              _rtn.Add(ExtractData<ActivityData>(reader));
             }
           }
         }
@@ -130,7 +118,7 @@ namespace KnaveBot.Database
       return _rtn;
     }
 
-    private T? GetData<T>(SqlDataReader nReader, string nValueName)
+    public static T? GetData<T>(SqlDataReader nReader, string nValueName)
     {
       if (typeof(T).IsEnum && typeof(T).Name == nameof(AdminAction))
         return (T)Enum.Parse(typeof(AdminAction), nReader.GetString(nReader.GetOrdinal(nValueName)), true);
@@ -155,9 +143,26 @@ namespace KnaveBot.Database
       return default(T);
     }
 
-    private string GetColumnName(string nFieldName)
+    public T ExtractData<T>(SqlDataReader nReader) where T : new()
     {
-      return ((DBAttribute)(typeof(ActivityData).GetField(nFieldName).GetCustomAttributes(typeof(DBAttribute), false).First())).ColumnName;
+      T rtn = new T();
+
+      foreach (FieldInfo f in typeof(ActivityData).GetFields())
+      {
+        Type _ = f.FieldType;
+
+        MethodInfo method = typeof(Database).GetMethod(nameof(Database.GetData));
+        MethodInfo generic = method.MakeGenericMethod(_);
+
+        f.SetValue(rtn, generic.Invoke(null, new object[] { nReader, GetAttribute<DBAttribute, T>(f.Name).ColumnName }));
+      }
+
+      return rtn;
+    }
+
+    public T GetAttribute<T, U>(string nFieldName) where T : new()
+    {
+      return (T)(typeof(U).GetField(nFieldName).GetCustomAttributes(typeof(T), false).First());
     }
   }
 }
