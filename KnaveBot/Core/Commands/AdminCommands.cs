@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using KnaveBot.Core.Managers;
 using System;
 using System.Threading.Tasks;
 
@@ -7,20 +8,29 @@ namespace KnaveBot.Core.Commands
 {
   public class AdminCommands : ModuleBase<SocketCommandContext>
   {
-    //[Command("kick")]
-    //[RequireUserPermission(Discord.GuildPermission.KickMembers)]
-    //public async Task KickCommand()
-    //{
-    //  // Damn Boi you need help kicking someone?!?! who hired this guy
-    //}
+    [Command("kick")]
+    [RequireUserPermission(Discord.GuildPermission.KickMembers)]
+    public async Task KickCommand()
+    {
+      // Damn Boi you need help kicking someone?!?! who hired this guy
+      await ReplyAsync(embed: HelpManager.AdminCommands.KickHelp().Build());
+    }
 
-    //[Command("kick")]
-    //[RequireUserPermission(Discord.GuildPermission.KickMembers)]
-    //public async Task KickCommand(SocketGuildUser nTarget) => await AdminManager.Kick(nTarget, null);
+    [Command("kick")]
+    [RequireUserPermission(Discord.GuildPermission.KickMembers)]
+    public async Task KickCommand(SocketGuildUser nTarget, [Remainder] string nReason = null) => await ReplyAsync(embed: (await AdminManager.Kick(Context, nTarget, nReason)).Build());
 
-    //[Command("kick")]
-    //[RequireUserPermission(Discord.GuildPermission.KickMembers)]
-    //public async Task KickCommand(SocketGuildUser nTarget, [Remainder] string nReason) => await AdminManager.Kick(nTarget, nReason);
+    [Command("view")]
+    [RequireUserPermission(Discord.GuildPermission.Administrator)]
+    public async Task View()
+    { 
+      
+    }
+
+    [Command("view")]
+    [RequireUserPermission(Discord.GuildPermission.Administrator)]
+    [Priority(1)]
+    public async Task View(SocketGuildUser nTarget, int? nPage = null) => await ReplyAsync(embed: (await AdminManager.View(nTarget, nPage)).Build());
 
     //[Command("ban")]
     //[RequireUserPermission(Discord.GuildPermission.BanMembers)]
@@ -90,7 +100,7 @@ namespace KnaveBot.Core.Commands
     //[RequireUserPermission(Discord.GuildPermission.Administrator)]
     //public async Task Poll()
     //{ 
-    
+
     //}
 
     //[Command("poll")]

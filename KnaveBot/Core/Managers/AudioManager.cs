@@ -57,8 +57,6 @@ namespace KnaveBot.Core.Managers
 
         SearchResponse search;
 
-        SearchType _type;
-
         if (nQuery.Contains("t="))
           if (int.TryParse(nQuery.Split("t=")[1], out int _))
             nQuery = nQuery.Split("t=")[0];

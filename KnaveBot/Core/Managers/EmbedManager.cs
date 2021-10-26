@@ -1,13 +1,23 @@
 ﻿using Discord;
+using KnaveBot.Core.Enum.Discord;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Victoria;
+using static KnaveBot.Core.Managers.GameManager.Coinflip;
 
 namespace KnaveBot.Core.Managers
 {
   public static class EmbedManager
   {
+    public static EmbedBuilder BuildEmbed()
+    { 
+      return new EmbedBuilder()
+      { 
+        Color = Color.Blue
+      };
+    }
+
     public static EmbedBuilder BuildEmbed(string nMessage)
     {
       EmbedBuilder eb = new EmbedBuilder()
@@ -78,22 +88,53 @@ namespace KnaveBot.Core.Managers
       return eb;
     }
 
-    public static EmbedBuilder BuildCoinflipEmbed(bool nIsHeads)
-    {
-      // TODO
-      // Add image for heads and tails
+    public static EmbedBuilder BuildEmbed(AdminAction nAction, IUser nUser, IUser nSender, string nReason)
+    { 
+      EmbedBuilder eb = BuildEmbed();
+      
+      eb.Title = "Kick Annoucement";
+      eb.Description = $"{nUser.Username} has been kicked from the server {(string.IsNullOrEmpty(nReason) ? "" : $"for '{nReason}'")}";
+      
+      string _action = "";
+      switch(nAction)
+      { 
+        case AdminAction.KICK:
+          _action = "kicked";
+          break;
 
+        case AdminAction.BAN:
+          _action = "banned";
+          break;
+
+        case AdminAction.MUTE:
+          _action = "muted";
+          break;
+          
+      }
+
+      eb.AddField(new EmbedFieldBuilder()
+      { 
+        Name = $"Who {_action} him? :triumph::",
+        Value = $"It was them! {nSender.Username}" + @"\nNow ya'll know who to blame"
+      });
+    
+      return eb;  
+    }
+
+    public static EmbedBuilder BuildCoinflipEmbed(CoinflipType nType)
+    {
       EmbedBuilder eb = new EmbedBuilder()
       {
-        Title = "Coinflip"
+        Title = "Coinflip",
+        ImageUrl = GetCoinURL(nType)
       };
 
       eb.AddField(new EmbedFieldBuilder()
       {
         Name = "Result",
-        Value = nIsHeads ? "Heads" : "Tails",
+        Value = nType == CoinflipType.HEADS ? "Heads" : "Tails",
         IsInline = true
-      });
+      }); 
       
       return eb;
     }

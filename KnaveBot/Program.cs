@@ -1,4 +1,11 @@
 ﻿using KnaveBot.Core;
+using static KnaveBot.Core.Attributes.DatabaseAttributes;
+using KnaveBot.Database.Objects;
+using System;
+using System.Linq;
+using System.Reflection;
+using KnaveBot.Core.Attributes;
+using KnaveBot.Core.Enum.Discord;
 
 namespace KnaveBot
 {
