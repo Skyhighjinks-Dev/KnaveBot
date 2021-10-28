@@ -9,6 +9,10 @@ namespace KnaveBot.Core.Commands
 {
   public class GameCommands : ModuleBase<SocketCommandContext>
   {
+    /// <summary>
+    /// Simple coinflip command
+    /// </summary>
+    /// <returns></returns>
     [Command("coinflip")]
     public async Task Coinflip()
     {

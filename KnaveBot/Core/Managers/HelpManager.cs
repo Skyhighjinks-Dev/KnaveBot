@@ -6,6 +6,10 @@ namespace KnaveBot.Core.Managers
   {
     public static class AdminCommands
     { 
+      /// <summary>
+      /// Displays how to kick a user
+      /// </summary>
+      /// <returns>Embed Builder</returns>
       public static EmbedBuilder KickHelp()
       { 
         EmbedBuilder eb = EmbedManager.BuildEmbed();

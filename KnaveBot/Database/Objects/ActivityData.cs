@@ -5,6 +5,9 @@ using static KnaveBot.Core.Attributes.DatabaseAttributes;
 
 namespace KnaveBot.Database.Objects
 {
+  /// <summary>
+  /// Contains information about an Admin action
+  /// </summary>
   public class ActivityData
   {
     [DBAttribute("ActionID")]

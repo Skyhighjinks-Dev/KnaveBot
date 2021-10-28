@@ -7,17 +7,29 @@ namespace KnaveBot.Core.Managers
   {
     public static class Coinflip
     {
+      /// <summary>
+      /// Coinflip results
+      /// </summary>
       public enum CoinflipType
       {
         HEADS = 0,
         TAILS = 1
       }
 
+      /// <summary>
+      /// Gets a coinflip result
+      /// </summary>
+      /// <returns>CoinflipType</returns>
       public static CoinflipType CoinflipResult()
       {
         return new Random().Next(0, 1000) % 2 == 0 ? CoinflipType.HEADS : CoinflipType.TAILS;
       }
 
+      /// <summary>
+      /// Gets the URL for the image
+      /// </summary>
+      /// <param name="nType">CoinFlipResult</param>
+      /// <returns>URL</returns>
       public static string GetCoinURL(CoinflipType nType)
       {
         string coinUrl = "";

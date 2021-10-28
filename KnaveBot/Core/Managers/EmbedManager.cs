@@ -1,5 +1,7 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using KnaveBot.Core.Enum.Discord;
+using KnaveBot.Database.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,9 @@ using static KnaveBot.Core.Managers.GameManager.Coinflip;
 
 namespace KnaveBot.Core.Managers
 {
+  /// <summary>
+  /// Just builds a bunch of embeds lol
+  /// </summary>
   public static class EmbedManager
   {
     public static EmbedBuilder BuildEmbed()
@@ -29,20 +34,6 @@ namespace KnaveBot.Core.Managers
       return eb;
     }
 
-    public static EmbedBuilder BuildEmbed(LavaTrack nTrack)
-    {
-      EmbedBuilder eb = new EmbedBuilder()
-      {
-        Title = "Video is now playing",
-        Description = nTrack.Title,
-        Color = Color.Blue,
-        Url = nTrack.Url,
-        ImageUrl = nTrack.FetchArtworkAsync().Result,
-        Footer = new EmbedFooterBuilder() { Text = $"Duration: {nTrack.Duration.ToString()}" }
-      };
-
-      return eb;
-    }
 
     public static EmbedBuilder BuildEmbed(LavaTrack nCurrTrack, int nTrackCount)
     {
@@ -57,6 +48,20 @@ namespace KnaveBot.Core.Managers
       return eb;
     }
 
+    public static EmbedBuilder BuildEmbed(LavaTrack nTrack)
+    {
+      EmbedBuilder eb = new EmbedBuilder()
+      {
+        Title = "Video is now playing",
+        Description = nTrack.Title,
+        Color = Color.Blue,
+        Url = nTrack.Url,
+        ImageUrl = nTrack.FetchArtworkAsync().Result,
+        Footer = new EmbedFooterBuilder() { Text = $"Duration: {nTrack.Duration.ToString()}" }
+      };
+
+      return eb;
+    }
     public static EmbedBuilder BuildEmbed(LavaPlayer nPlayer, int nPage)
     {
       EmbedBuilder eb = new EmbedBuilder()
@@ -119,6 +124,45 @@ namespace KnaveBot.Core.Managers
       });
     
       return eb;  
+    }
+
+    public static EmbedBuilder BuildEmbed(List<ActivityData> nData, SocketGuildUser nUser, int nPageNum, int nMaxPages)
+    { 
+      EmbedBuilder eb = BuildEmbed();
+
+      eb.Description = $"Report of all admin actions from/against the user: {nUser.Username}";
+      eb.ImageUrl = nUser.GetDefaultAvatarUrl();
+      eb.Title = $"History for: {nUser.Username}#{nUser.Discriminator}";
+      
+      string content = "";
+
+      for(int x = 0; x < nData.Count(); x++)
+      { 
+        if(x > 0)
+          content += "\n\n";
+
+        content += $"**Report ({x + 1}): **\n" +
+                   $"**Action**: {nData[x].Action}\n" +
+                   $"**Time**: {(nData[x].ActionDate.HasValue ? nData[x].ActionDate.ToString() : "N/A")}\n" +
+                   $"**Target**: {nData[x].User} (ID: {nData[x].UserID})\n" +
+                   $"**Staff Member**: {nData[x].Sender} (ID: {nData[x].SenderID})\n";
+      }
+
+      eb.AddField(new EmbedFieldBuilder()
+      {
+        Name = "Reports",
+        IsInline = true,
+        Value = content
+      });
+
+      eb.Footer = new EmbedFooterBuilder()
+      { 
+        Text = $"Page: {nPageNum}/{nMaxPages}"
+      };
+
+      eb.Timestamp = DateTime.Now;
+
+      return eb;
     }
 
     public static EmbedBuilder BuildCoinflipEmbed(CoinflipType nType)

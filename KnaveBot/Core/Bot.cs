@@ -14,11 +14,20 @@ namespace KnaveBot.Core
 {
   public class Bot
   {
+    /// <summary>
+    /// Database Manager
+    /// </summary>
     public static DatabaseManager DBManager { get; private set; }
 
+    /// <summary>
+    /// Client and command service
+    /// </summary>
     private DiscordSocketClient _client;
     private CommandService _commandService;
 
+    /// <summary>
+    /// Information for discord and LavaNode
+    /// </summary>
     private string DiscordToken { get; set; }
     private string LavaNodeHost { get; set; }
     private string LavaNodePass { get; set; }
@@ -28,8 +37,10 @@ namespace KnaveBot.Core
     {
       DBManager = new DatabaseManager();
 
+      // Gets config options
       Task.Run(async () => await CollectConfig()).Wait();
 
+      // Sets up Discord connection
       this._client = new DiscordSocketClient(new DiscordSocketConfig() { LogLevel = Discord.LogSeverity.Debug });
       this._commandService = new CommandService(new CommandServiceConfig()
       {
@@ -39,6 +50,7 @@ namespace KnaveBot.Core
         IgnoreExtraArgs = true
       });
 
+      // Sets up collection
       var collection = new ServiceCollection();
       collection.AddSingleton(_client)
                 .AddSingleton(_commandService)
@@ -54,6 +66,10 @@ namespace KnaveBot.Core
       ServiceManager.SetProvider(collection);
     }
 
+    /// <summary>
+    /// Main Async
+    /// </summary>
+    /// <returns></returns>
     public async Task MainAsync()
     {
       if (string.IsNullOrEmpty(this.DiscordToken))
@@ -70,6 +86,10 @@ namespace KnaveBot.Core
       await Task.Delay(-1);
     }
 
+    /// <summary>
+    /// Assigns config values
+    /// </summary>
+    /// <returns></returns>
     private async Task CollectConfig()
     {
       this.DiscordToken = await DBManager.GetConfig(nameof(this.DiscordToken)).ConfigureAwait(false);

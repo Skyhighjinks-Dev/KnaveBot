@@ -13,6 +13,7 @@ namespace KnaveBot
   {
     static void Main(string[] args)
     {
+      // Starts the bot
       Bot _bot = new Bot();
       _bot.MainAsync().GetAwaiter().GetResult();
     }

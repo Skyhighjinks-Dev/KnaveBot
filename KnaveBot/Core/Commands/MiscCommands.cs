@@ -8,6 +8,10 @@ namespace KnaveBot.Core.Commands
 {
   public class MiscCommands : ModuleBase<SocketCommandContext>
   {
+    /// <summary>
+    /// Simple ping command - used for testing connectivity
+    /// </summary>
+    /// <returns></returns>
     [Command("ping")]
     public async Task Ping()
     {

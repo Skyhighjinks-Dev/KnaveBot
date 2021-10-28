@@ -15,13 +15,21 @@ namespace KnaveBot.Core.Managers
 {
   public static class EventManager
   {
+    /// <summary>Client</summary>
     private static DiscordSocketClient Client = ServiceManager.GetService<DiscordSocketClient>();
+    /// <summary>Command service</summary>
     private static CommandService CommandService = ServiceManager.GetService<CommandService>();
 
+    /// <summary>LavaNode</summary>
     private static LavaNode LavaNode = ServiceManager.Service.GetRequiredService<LavaNode>();
 
+    /// <summary>Discord prefix</summary>
     private static string DiscordPrefix { get; set; }
 
+    /// <summary>
+    /// Loads commands
+    /// </summary>
+    /// <returns></returns>
     public static async Task LoadCommands()
     {
       DiscordPrefix = await DatabaseManager.Instance.GetConfig(nameof(DiscordPrefix)).ConfigureAwait(false);
@@ -31,6 +39,10 @@ namespace KnaveBot.Core.Managers
       return;
     }
 
+    /// <summary>
+    /// On Client Ready event
+    /// </summary>
+    /// <returns></returns>
     private static async Task OnClientReady()
     {
       try
@@ -49,6 +61,12 @@ namespace KnaveBot.Core.Managers
       await Client.SetGameAsync($"Prefix: {DiscordPrefix}");
     }
 
+
+    /// <summary>
+    /// Message handler
+    /// </summary>
+    /// <param name="nMessage">Message info</param>
+    /// <returns></returns>
     private static async Task OnClientMessageReceived(SocketMessage nMessage)
     {
       var message = (SocketUserMessage)nMessage;

@@ -15,6 +15,11 @@ namespace KnaveBot.Database
 {
   public class Database : DatabaseManager
   {
+    /// <summary>
+    /// Gets a config option
+    /// </summary>
+    /// <param name="nConfOpt">Name of the config option</param>
+    /// <returns>Value of config options</returns>
     [DBConnAspect]
     public async Task<string> GetConfigOption(string nConfOpt)
     {
@@ -50,6 +55,16 @@ namespace KnaveBot.Database
       return null;
     }
 
+
+    /// <summary>
+    /// Inserts admin action to DB
+    /// </summary>
+    /// <param name="nAction">Action type</param>
+    /// <param name="nGuild">Guild</param>
+    /// <param name="nUser">User targetted</param>
+    /// <param name="nSender">Sender</param>
+    /// <param name="nReason">Reason, if specified</param>
+    /// <returns>ActionID</returns>
     [DBConnAspect]
     public async Task<int> AddAdminAction(AdminAction nAction, IGuild nGuild, SocketGuildUser nUser, IUser nSender, string nReason)
     {
@@ -72,6 +87,13 @@ namespace KnaveBot.Database
       }
     }
 
+
+    /// <summary>
+    /// Updates admin action (Sets the status)
+    /// </summary>
+    /// <param name="nActionID">Admin action ID</param>
+    /// <param name="nComplete">If the admin action has been actioned</param>
+    /// <returns>If an update happened</returns>
     [DBConnAspect]
     public async Task<bool> UpdateAdminActionToCompleteAsync(int nActionID, bool nComplete)
     {
@@ -86,6 +108,11 @@ namespace KnaveBot.Database
       }
     }
 
+    /// <summary>
+    /// Gets activity of a specific user
+    /// </summary>
+    /// <param name="nUser">Target user</param>
+    /// <returns>List of activity data</returns>
     public async Task<List<ActivityData>> GetActivity(SocketGuildUser nUser)
     {
       List<ActivityData> _rtn = new List<ActivityData>();
@@ -119,6 +146,14 @@ namespace KnaveBot.Database
       return _rtn;
     }
 
+
+    /// <summary>
+    /// Retrieves information and converts it to it's necessary datatype
+    /// </summary>
+    /// <typeparam name="T">Type of data to convert entry to</typeparam>
+    /// <param name="nReader">SqlReader with data</param>
+    /// <param name="nValueName">Value to read</param>
+    /// <returns>Datatype requested</returns>
     public static T? GetData<T>(SqlDataReader nReader, string nValueName)
     {
       if (typeof(T).IsEnum && typeof(T).Name == nameof(AdminAction))
@@ -140,10 +175,25 @@ namespace KnaveBot.Database
             return (T)Convert.ChangeType(null, typeof(T));
           return (T)Convert.ChangeType(nReader.GetDateTime(nReader.GetOrdinal(nValueName)), typeof(T));
       }
+      
+      // Can't get typecode of nullables, so have to check with an if statement
+      if(typeof(T) == typeof(DateTime?))
+      {
+        if (nReader.IsDBNull(nReader.GetOrdinal(nValueName)))
+          return default(T);
+        return (T)Convert.ChangeType(nReader.GetDateTime(nReader.GetOrdinal(nValueName)), typeof(T).GetGenericArguments()[0]);
+      }
 
       return default(T);
     }
 
+    /// <summary>
+    /// Reflection woo
+    /// Basically looks for each field of an object and attempts to retrieve it from the database
+    /// </summary>
+    /// <typeparam name="T">Object to return</typeparam>
+    /// <param name="nReader">SqlDataReader with returned lines</param>
+    /// <returns>Object with parsed data</returns>
     public T ExtractData<T>(SqlDataReader nReader) where T : new()
     {
       T rtn = new T();
@@ -152,15 +202,24 @@ namespace KnaveBot.Database
       {
         Type _ = f.FieldType;
 
+        // Retrieves datatype of field and adds it as a generic data type to the method
         MethodInfo method = typeof(Database).GetMethod(nameof(Database.GetData));
         MethodInfo generic = method.MakeGenericMethod(_);
 
+        // Basically does some magic right here
         f.SetValue(rtn, generic.Invoke(null, new object[] { nReader, GetAttribute<DBAttribute, T>(f.Name).ColumnName }));
       }
 
       return rtn;
     }
 
+    /// <summary>
+    /// Gets the custom attributes
+    /// </summary>
+    /// <typeparam name="T">Attribute</typeparam>
+    /// <typeparam name="U">Class</typeparam>
+    /// <param name="nFieldName">Field you want to retrieve</param>
+    /// <returns>Custom attribute</returns>
     public T GetAttribute<T, U>(string nFieldName) where T : new()
     {
       return (T)(typeof(U).GetField(nFieldName).GetCustomAttributes(typeof(T), false).First());

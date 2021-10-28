@@ -12,6 +12,10 @@ namespace KnaveBot.Core.Struct.Discord
     public string Arguments { get; private set; }
     public DateTime Raised { get; private set; }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="nContext">Command context</param>
     public CommandLoggingInfo(CommandContext nContext)
     {
       this.Context = nContext;
